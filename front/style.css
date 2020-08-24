@@ -62,7 +62,7 @@ footer {
 }
 
 .load-bar {
-  display: block; /*убрать когда файл загружается*/
+  display: none; /*убрать когда файл загружается*/
   width: 333px;
   height: 49px;
   margin-top: 20px;
@@ -72,12 +72,12 @@ footer {
   padding-right: 1px;
 }
   .progress {
-    width: 100%;
+    width: 100%; /*отвечает за длину прогресс бара*/
     height: 48px;
     background-color: #30F2C2;
   }
     .progress a {
-      display: inline-block;
+      display: inline-block; /*до окончания загрузки : none*/
       cursor: pointer;
       color: black;
       margin: 14px auto;
