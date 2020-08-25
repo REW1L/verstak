@@ -13,7 +13,8 @@
   </header>
   <main>
     <form method="GET">
-      <input class="load-file" type="file" accept=".doc, .docx">
+      <label for="load-file">Загрузить файл</label>
+      <input id="load-file" class="load-file" type="file" accept=".doc, .docx">
       <div class="load-bar">
         <div class="progress">
           <a href="#">скачать верстку</a>
@@ -24,7 +25,19 @@
   </main>
   <footer>
     <p>Сделали с любовью, Иван и Валера ❤️</p>
-    <p>Табличник <a href="https://truetnoth.github.io/tjtable/" target="_blank">тоже охуенный</a></p>
+    <p>Табличник <a href="https://truetnoth.github.io/tjtable/" target="_blank">тоже охуенный</a>, <a href="#" class="exit">выйти</a></p>
   </footer>
 </body>
+<script>
+  let fileField = document.querySelector("#load-file");
+  let fileLabel = document.querySelector("label");
+  let fileName = "";
+  fileField.onchange = function () {
+    for (let i = 12; i < this.value.length; i+=1) {
+      fileName += this.value[i];
+      fileLabel.innerHTML = fileName;
+    }
+    fileName = "";
+  };
+</script>
 </html>
