@@ -27,6 +27,9 @@ class VTable:
     def __str__(self):
         return "\n".join([str(x) for x in self])
 
+    def to_html(self):
+        return "\n".join([x.to_html() for x in self])
+
     def parse(self, table: Table) -> []:
         rows_len = len(table.rows)
         columns_len = len(table.columns)
@@ -40,7 +43,8 @@ class VTable:
                 self.items.extend(VPole.parse_poles(table))
                 self.type = VTable.TYPE.POLES
             else:
-                return ["## BIG TABLE"]
+                self.type = VTable.TYPE.BIG_TABLE
+                self.items.append(VBigTable(table))
         elif columns_len == 1:
             self.items.append(VPlashka(table.rows[0].cells[0]))
             self.type = VTable.TYPE.PLASHKA

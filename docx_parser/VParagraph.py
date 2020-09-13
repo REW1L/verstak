@@ -42,11 +42,45 @@ class VParagraph:
     def __iter__(self):
         return self.parts.__iter__()
 
+    def to_html(self):
+        html_list = []
+        text = "".join([str(x) for x in self.parts])
+        if text == "":
+            return ""
+        if self.title and len(text) < 90:
+            html_list.append(VText(f"<h2>"))
+        elif self.title and len(text) >= 90:
+            html_list.append(VText(f'<p class="verstak_warning">'))
+        elif self.list_type is not None:
+            html_list.append(VText("<li>"))
+        elif not self.is_picture():
+            html_list.append(VText("<p>"))
+
+        for part in self.parts:
+            html_list.append(part)
+
+        if self.title and len(text) < 90:
+            html_list.append(VText(f"</h2>"))
+        elif self.title and len(text) >= 90:
+            html_list.append(VText(f"</p>"))
+        elif self.list_type is not None:
+            html_list.append(VText("</li>"))
+        elif not self.is_picture():
+            html_list.append(VText(f"</p>"))
+        return "".join([x.to_html() for x in html_list])
+
     def is_picture(self) -> bool:
         for part in self.parts:
             if type(part) == VPicture:
                 return True
         return False
+
+    @property
+    def list_type(self):
+        for part in self.parts:
+            if type(part) == VListParagraph:
+                return part.type
+        return None
 
     def __parse_title(self):
         if not self.title_enabled:

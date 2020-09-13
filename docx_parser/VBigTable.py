@@ -8,3 +8,6 @@ class VBigTable:
 
     def __str__(self):
         return "## BIG TABLE"
+
+    def to_html(self):
+        return f"<p>{str(self)}</p>"

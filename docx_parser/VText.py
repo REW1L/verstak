@@ -4,3 +4,6 @@ class VText:
 
     def __str__(self):
         return self.text
+
+    def to_html(self):
+        return self.text

@@ -12,6 +12,9 @@ class VBoldText:
     def __str__(self):
         return f"**{self.text}**"
 
+    def to_html(self):
+        return f"<strong>{self.text}</strong>"
+
     def parse(self, bold_text: CT_R):
         self.text = bold_text.text
         self.raw = bold_text

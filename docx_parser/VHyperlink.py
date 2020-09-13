@@ -14,6 +14,12 @@ class VHyperlink:
     def __str__(self):
         return f"[{self.text}]( {self.url} )"
 
+    def to_html(self):
+        if len([x for x in self.url if x == "(" or x == ")"]) == 0:
+            return f"[{self.text}]({self.url})"
+        else:
+            return f'<a href="{self.url}" target="_blank">{self.text}</a>'
+
     def parse(self, hyperlink: _Element, paragraph: Paragraph):
         url_id = None
         if len(hyperlink.values()) > 0:

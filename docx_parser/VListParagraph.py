@@ -11,6 +11,23 @@ class VListParagraph:
         BULLET = 2
         ABC = 3
 
+    @staticmethod
+    def type_to_html(list_type: Type, opening: bool = True):
+        if list_type == VListParagraph.Type.BULLET:
+            if opening:
+                ending = "ul]"
+            else:
+                ending = "ul]"
+        else:
+            if opening:
+                ending = "ol type=milchin]"
+            else:
+                ending = "ol]"
+        if opening:
+            return f"[{ending}"
+        else:
+            return f"[/{ending}"
+
     def __init__(self, list_text: CT_PPr = None, paragraph: Paragraph = None):
         self.text = ""
         self.level = 0
@@ -26,6 +43,9 @@ class VListParagraph:
         else:
             list_str = "- "
         return f"{level}{list_str}{self.text}"
+
+    def to_html(self):
+        return self.text
 
     def parse(self, list_text: CT_PPr, paragraph: Paragraph) -> str:
         self.raw = paragraph

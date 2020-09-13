@@ -11,6 +11,7 @@ from .VParagraph import VParagraph
 from .VText import VText
 from .VPicture import VPicture
 from .VTable import VTable
+from .VListParagraph import VListParagraph
 
 
 class VDocument:
@@ -76,6 +77,38 @@ class VDocument:
                 self.__parse_table(elem, self.raw)
             blank_line_caption_found = False
         return self.parts
+
+    def to_html(self):
+        html_parts = ['<html>', '<head><meta charset="UTF-8"></head>', '<body>']
+        is_list = False
+        list_type = None
+        for part in self.parts:
+            if type(part) == VParagraph:
+                if not is_list and part.list_type is not None:
+                    list_type = part.list_type
+                    is_list = True
+                    html_parts.append(VListParagraph.type_to_html(list_type))
+                elif is_list and part.list_type is None and str(part).strip() != "":
+                    html_parts.append(VListParagraph.type_to_html(list_type, False))
+                    is_list = False
+            elif is_list:
+                html_parts.append(VListParagraph.type_to_html(list_type, False))
+                is_list = False
+            if type(part) == VTable:
+                if part.type == VTable.TYPE.BIG_TABLE:
+                    if len(html_parts) > 0 and html_parts[-1].startswith("<h2>"):
+                        html_parts[-1] = html_parts[-1].replace("<h2>", '<h3 class="table-heading">')
+                        html_parts[-1] = html_parts[-1].replace("</h2>", '</h3>')
+            html_parts.append(part.to_html())
+        if is_list:
+            html_parts.append(VListParagraph.type_to_html(list_type, False))
+        html_parts.extend(['</body>', '</html>'])
+        return "\n".join(html_parts)
+
+    def store_html(self, path: str = f"html{os.sep}result.html"):
+        with open(path, "w") as result_file:
+            result_file.write(self.to_html())
+            result_file.flush()
 
     def store_markdown(self, path: str = f"markdown{os.sep}result.md"):
         with open(path, "w") as result_file:

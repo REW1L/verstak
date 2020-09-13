@@ -29,6 +29,37 @@ class VPlashka:
         lines.append("```")
         return "\n".join(lines)
 
+    def to_html(self):
+        is_list = False
+        html_parts = ['[hl]']
+        list_type = None
+        first_title = True
+        for part in self.parts:
+            if type(part) == docx_parser.VParagraph:
+                if first_title and part.title:
+                    first_title = False
+                    part.title = False
+                    html_parts[0] = f'[hl title="{str(part)}"]'
+                    part.title = True
+                    continue
+                if part.title and str(part).strip() == "":
+                    continue
+                if not is_list and list_type is not None:
+                    list_type = part.list_type
+                    is_list = True
+                    html_parts.append(docx_parser.VListParagraph.type_to_html(list_type))
+                elif is_list and part.list_type is None and str(part).strip() != "":
+                    html_parts.append(docx_parser.VListParagraph.type_to_html(list_type, False))
+                    is_list = False
+            elif is_list:
+                html_parts.append(docx_parser.VListParagraph.type_to_html(list_type, False))
+                is_list = False
+            html_parts.append(part.to_html())
+        if is_list:
+            html_parts.append(docx_parser.VListParagraph.type_to_html(list_type, False))
+        html_parts.append("[/hl]")
+        return "\n".join(html_parts)
+
     def parse(self, cell: _Cell) -> []:
         for elem in cell._element:
             if type(elem) == CT_P:

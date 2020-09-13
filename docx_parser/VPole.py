@@ -3,6 +3,7 @@ from docx.table import Table, _Row, _Cell
 
 from .VParagraph import VParagraph
 from .VHyperlink import VHyperlink
+from .VText import VText
 
 
 class VPole:
@@ -34,6 +35,23 @@ class VPole:
         section.append("```")
         return "\n".join(section)
 
+    def to_html(self):
+        url = ""
+        if self.url != "":
+            if self.url.startswith("https://journal.tinkoff.ru"):
+                url = f' url="{self.url[26:]}"'
+            else:
+                url = f' url="{self.url}"'
+        html_parts = [f'<div class="with-aside">', self.left_parts[0].to_html(), f"[aside{url}]"]
+        if len(self.right_parts) > 2 or not self.url.startswith("https://journal.tinkoff.ru"):
+            for part in self.right_parts:
+                html_parts.append(part.to_html())
+        html_parts.append("[/aside]")
+        for part in self.left_parts[1:]:
+            html_parts.append(part.to_html())
+        html_parts.append("</div>")
+        return "\n".join(html_parts)
+
     def parse(self, row: _Row):
         left: _Cell = row.cells[0]
         right: _Cell = row.cells[1]
@@ -51,7 +69,7 @@ class VPole:
             right_paragraph_part: VHyperlink = self.right_parts[0][0]
             if type(right_paragraph_part) == VHyperlink:
                 self.url = right_paragraph_part.url
-                self.right_parts = [right_paragraph_part.text]
+                self.right_parts = [VText(right_paragraph_part.text)]
 
     @staticmethod
     def parse_poles(table: Table) -> list:
