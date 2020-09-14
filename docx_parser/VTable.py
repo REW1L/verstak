@@ -25,10 +25,13 @@ class VTable:
         return self.items.__iter__()
 
     def __str__(self):
-        return "\n".join([str(x) for x in self])
+        return "".join([str(x) for x in self])
 
     def to_html(self):
-        return "\n".join([x.to_html() for x in self])
+        if self.type == VTable.TYPE.POLES or self.type == VTable.TYPE.PLASHKA:
+            return "\n\n".join([x.to_html() for x in self])
+        else:
+            return "".join([x.to_html() for x in self])
 
     def parse(self, table: Table) -> []:
         rows_len = len(table.rows)

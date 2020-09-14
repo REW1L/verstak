@@ -39,17 +39,33 @@ class VPole:
         url = ""
         if self.url != "":
             if self.url.startswith("https://journal.tinkoff.ru"):
-                url = f' url="{self.url[26:]}"'
+                url = f' ref="{self.url[27:]}"'
             else:
-                url = f' url="{self.url}"'
+                url = f' ref="{self.url}"'
         html_parts = [f'<div class="with-aside">', self.left_parts[0].to_html(), f"[aside{url}]"]
-        if len(self.right_parts) > 2 or not self.url.startswith("https://journal.tinkoff.ru"):
-            for part in self.right_parts:
+        parts = []
+        remove_tj_links = False
+        for paragraph in self.right_parts:
+            if type(paragraph) == VParagraph:
+                for part in paragraph:
+                    if type(part) == VHyperlink and not part.url.startswith("https://journal.tinkoff.ru"):
+                        remove_tj_links = True
+        for paragraph in self.right_parts:
+            if type(paragraph) == VParagraph:
+                for part in paragraph:
+                    if remove_tj_links and type(part) == VHyperlink and part.url.startswith("https://journal.tinkoff.ru"):
+                        break
+                else:
+                    parts.append(paragraph)
+            else:
+                parts.append(paragraph)
+        if len(parts) > 1 or not self.url.startswith("https://journal.tinkoff.ru"):
+            for part in parts:
                 html_parts.append(part.to_html())
-        html_parts.append("[/aside]")
+            html_parts.append("[/aside]")
+        html_parts.append("</div>")
         for part in self.left_parts[1:]:
             html_parts.append(part.to_html())
-        html_parts.append("</div>")
         return "\n".join(html_parts)
 
     def parse(self, row: _Row):

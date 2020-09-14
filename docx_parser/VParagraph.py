@@ -28,7 +28,8 @@ class VParagraph:
     def __str__(self):
         if self.title:
             parts = [f'#{"#" * self.title_level} ']
-            parts.extend(self.parts)
+            parts.extend([x.text for x in self.parts])
+            return "".join(parts)
         else:
             parts = self.parts
         return "".join([str(x) for x in parts])
@@ -51,23 +52,27 @@ class VParagraph:
             html_list.append(VText(f"<h2>"))
         elif self.title and len(text) >= 90:
             html_list.append(VText(f'<p class="verstak_warning">'))
-        elif self.list_type is not None:
-            html_list.append(VText("<li>"))
-        elif not self.is_picture():
+        elif self.list_type is None and not self.is_picture():
             html_list.append(VText("<p>"))
-
         for part in self.parts:
             html_list.append(part)
-
         if self.title and len(text) < 90:
             html_list.append(VText(f"</h2>"))
         elif self.title and len(text) >= 90:
             html_list.append(VText(f"</p>"))
-        elif self.list_type is not None:
-            html_list.append(VText("</li>"))
-        elif not self.is_picture():
+        elif self.list_type is None and not self.is_picture():
             html_list.append(VText(f"</p>"))
-        return "".join([x.to_html() for x in html_list])
+        if self.title:
+            return "".join([x.text for x in html_list])
+        elif self.is_picture():
+            html_str = html_list[0].to_html()
+            for part in html_list[1:]:
+                if type(part) == VPicture:
+                    html_list += "\n"
+                html_list += part.to_html()
+            return html_str
+        else:
+            return "".join([x.to_html() for x in html_list]).replace("\n", "")
 
     def is_picture(self) -> bool:
         for part in self.parts:
@@ -81,6 +86,14 @@ class VParagraph:
             if type(part) == VListParagraph:
                 return part.type
         return None
+
+    @property
+    def text(self):
+        text = ""
+        for part in self.parts:
+            text.replace("\n", "")
+            text += part.text
+        return text
 
     def __parse_title(self):
         if not self.title_enabled:
@@ -128,17 +141,17 @@ class VParagraph:
         return False
 
     def __move_text_to_caption(self):
-        caption = ""
+        caption = []
         new_parts = []
         img = None
         for part in self.parts:
             if type(part) != VPicture:
-                caption += str(part)
+                caption.append(part)
             else:
                 if img is None:
                     img = part
                 new_parts.append(part)
-        if img is not None and caption != "":
+        if img is not None and "".join(str(x) for x in caption) != "":
             new_parts[0].caption = caption
             self.parts = new_parts
 

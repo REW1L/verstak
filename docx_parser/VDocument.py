@@ -42,7 +42,7 @@ class VDocument:
             for ppart in self.parts[-imgs_count]:
                 if type(ppart) == VPicture:
                     ppart: VPicture
-                    ppart.caption = str(paragraph)
+                    ppart.caption = paragraph
                     break
         return None
 
@@ -79,20 +79,25 @@ class VDocument:
         return self.parts
 
     def to_html(self):
-        html_parts = ['<html>', '<head><meta charset="UTF-8"></head>', '<body>']
+        html_parts = []
         is_list = False
         list_type = None
         for part in self.parts:
             if type(part) == VParagraph:
+                if part.text.strip() == "":
+                    continue
                 if not is_list and part.list_type is not None:
                     list_type = part.list_type
                     is_list = True
-                    html_parts.append(VListParagraph.type_to_html(list_type))
-                elif is_list and part.list_type is None and str(part).strip() != "":
-                    html_parts.append(VListParagraph.type_to_html(list_type, False))
+                    html_parts.append(f"{VListParagraph.type_to_html(list_type)}\n")
+                elif is_list and part.list_type is None:
+                    html_parts[-1] += VListParagraph.type_to_html(list_type, False)
                     is_list = False
+                if is_list and part.list_type is not None:
+                    html_parts[-1] += f"{part.to_html()}\n"
+                    continue
             elif is_list:
-                html_parts.append(VListParagraph.type_to_html(list_type, False))
+                html_parts[-1] += VListParagraph.type_to_html(list_type, False)
                 is_list = False
             if type(part) == VTable:
                 if part.type == VTable.TYPE.BIG_TABLE:
@@ -101,13 +106,13 @@ class VDocument:
                         html_parts[-1] = html_parts[-1].replace("</h2>", '</h3>')
             html_parts.append(part.to_html())
         if is_list:
-            html_parts.append(VListParagraph.type_to_html(list_type, False))
-        html_parts.extend(['</body>', '</html>'])
-        return "\n".join(html_parts)
+            html_parts[-1] += VListParagraph.type_to_html(list_type, False)
+        return "\n\n".join(html_parts)
 
     def store_html(self, path: str = f"html{os.sep}result.html"):
         with open(path, "w") as result_file:
             result_file.write(self.to_html())
+            result_file.write("\n")
             result_file.flush()
 
     def store_markdown(self, path: str = f"markdown{os.sep}result.md"):

@@ -42,10 +42,10 @@ class VListParagraph:
             list_str = "1. "
         else:
             list_str = "- "
-        return f"{level}{list_str}{self.text}"
+        return f"{level}{list_str}"
 
     def to_html(self):
-        return self.text
+        return ""
 
     def parse(self, list_text: CT_PPr, paragraph: Paragraph) -> str:
         self.raw = paragraph

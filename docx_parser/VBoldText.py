@@ -4,16 +4,23 @@ from docx.oxml.text.run import CT_R
 class VBoldText:
     def __init__(self, bold_text: CT_R = None):
         self.text = ""
+        self.bold = False
         if bold_text is not None:
             self.parse(bold_text)
         else:
             self.raw = bold_text
 
     def __str__(self):
-        return f"**{self.text}**"
+        if self.bold:
+            return f"**{self.text}**"
+        else:
+            return self.text
 
     def to_html(self):
-        return f"<strong>{self.text}</strong>"
+        if self.bold:
+            return f"<strong>{self.text}</strong>"
+        else:
+            return self.text
 
     def parse(self, bold_text: CT_R):
         self.text = bold_text.text
@@ -22,8 +29,5 @@ class VBoldText:
             return f"{self.text}"
         if bold_text.text.strip() == "":
             return self.text
-        bold_enabled = bold_text.rPr.b.val
-        if bold_enabled:
-            return str(self)
-        else:
-            return f"{self.text}"
+        self.bold = bold_text.rPr.b.val
+        return str(self)

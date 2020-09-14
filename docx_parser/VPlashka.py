@@ -36,27 +36,30 @@ class VPlashka:
         first_title = True
         for part in self.parts:
             if type(part) == docx_parser.VParagraph:
-                if first_title and part.title:
+                if part.text.strip() == "":
+                    continue
+                if first_title:
                     first_title = False
-                    part.title = False
-                    html_parts[0] = f'[hl title="{str(part)}"]'
-                    part.title = True
+                    html_parts[0] = f'[hl title="{part.text}"]'
                     continue
                 if part.title and str(part).strip() == "":
                     continue
-                if not is_list and list_type is not None:
+                if not is_list and part.list_type is not None:
                     list_type = part.list_type
                     is_list = True
-                    html_parts.append(docx_parser.VListParagraph.type_to_html(list_type))
-                elif is_list and part.list_type is None and str(part).strip() != "":
-                    html_parts.append(docx_parser.VListParagraph.type_to_html(list_type, False))
+                    html_parts.append(f"{docx_parser.VListParagraph.type_to_html(list_type)}\n")
+                elif is_list and part.list_type is None:
+                    html_parts[-1] += docx_parser.VListParagraph.type_to_html(list_type, False)
                     is_list = False
+                if is_list and part.list_type is not None:
+                    html_parts[-1] += f"{part.to_html()}\n"
+                    continue
             elif is_list:
-                html_parts.append(docx_parser.VListParagraph.type_to_html(list_type, False))
+                html_parts[-1] += docx_parser.VListParagraph.type_to_html(list_type, False)
                 is_list = False
             html_parts.append(part.to_html())
         if is_list:
-            html_parts.append(docx_parser.VListParagraph.type_to_html(list_type, False))
+            html_parts[-1] += docx_parser.VListParagraph.type_to_html(list_type, False)
         html_parts.append("[/hl]")
         return "\n".join(html_parts)
 
