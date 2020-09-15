@@ -43,7 +43,7 @@ class VParagraph:
     def __iter__(self):
         return self.parts.__iter__()
 
-    def to_html(self):
+    def to_html(self, is_warning: bool = False):
         html_list = []
         text = "".join([str(x) for x in self.parts])
         if text == "":
@@ -53,7 +53,10 @@ class VParagraph:
         elif self.title and len(text) >= 90:
             html_list.append(VText(f'<p class="verstak_warning">'))
         elif self.list_type is None and not self.is_picture():
-            html_list.append(VText("<p>"))
+            if is_warning:
+                html_list.append(VText(f'<p class="verstak_warning">'))
+            else:
+                html_list.append(VText("<p>"))
         for part in self.parts:
             html_list.append(part)
         if self.title and len(text) < 90:

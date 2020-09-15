@@ -40,7 +40,10 @@ class VPlashka:
                     continue
                 if first_title:
                     first_title = False
-                    html_parts[0] = f'[hl title="{part.text}"]'
+                    if len(part.text) <= 90:
+                        html_parts[0] = f'[hl title="{part.text}"]'
+                    else:
+                        html_parts.append(part.to_html(is_warning=True))
                     continue
                 if part.title and str(part).strip() == "":
                     continue

@@ -5,6 +5,7 @@ from .VPole import VPole
 from .VPlashka import VPlashka
 from .VBigTable import VBigTable
 from .VText import VText
+from .VParagraph import VParagraph
 
 
 class VTable:
@@ -41,8 +42,8 @@ class VTable:
         if columns_len == 2:
             left_column: _Column = table.columns[0]
             right_column: _Column = table.columns[1]
-            if float(left_column._gridCol.values()[0]) * 0.6 >= float(right_column._gridCol.values()[0]) and \
-                    len(left_column.cells[0].text) * 0.5 >= len(right_column.cells[0].text):
+            if float(left_column._gridCol.values()[0]) * 0.6 > float(right_column._gridCol.values()[0]) and \
+               len(left_column.cells[0].text) * 0.5 > len(right_column.cells[0].text):
                 self.items.extend(VPole.parse_poles(table))
                 self.type = VTable.TYPE.POLES
             else:
