@@ -5,7 +5,6 @@ from .VPole import VPole
 from .VPlashka import VPlashka
 from .VBigTable import VBigTable
 from .VText import VText
-from .VParagraph import VParagraph
 
 
 class VTable:

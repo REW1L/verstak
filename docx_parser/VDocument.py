@@ -25,6 +25,11 @@ class VDocument:
 
     def __parse_paragraph(self, element: CT_P, document: Document, caption: bool) -> Optional[VParagraph]:
         paragraph = VParagraph(Paragraph(element, document))
+        if paragraph is not None and str(paragraph).find("ганизация") != -1:
+            print(paragraph)
+            print(self.first_title)
+        if not self.first_title and len(self.parts) > 0:
+            self.first_title = False
         if self.first_title is None and paragraph.title:
             self.first_title = paragraph
             return None
