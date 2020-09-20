@@ -25,9 +25,6 @@ class VDocument:
 
     def __parse_paragraph(self, element: CT_P, document: Document, caption: bool) -> Optional[VParagraph]:
         paragraph = VParagraph(Paragraph(element, document))
-        if paragraph is not None and str(paragraph).find("ганизация") != -1:
-            print(paragraph)
-            print(self.first_title)
         if not self.first_title and len(self.parts) > 0:
             self.first_title = False
         if self.first_title is None and paragraph.title:
@@ -113,6 +110,10 @@ class VDocument:
         if is_list:
             html_parts[-1] += VListParagraph.type_to_html(list_type, False)
         return "\n\n".join(html_parts)
+
+    def do_typograf(self):
+        for part in self.parts:
+            part.do_typograf()
 
     def store_html(self, path: str = f"html{os.sep}result.html"):
         with open(path, "w") as result_file:

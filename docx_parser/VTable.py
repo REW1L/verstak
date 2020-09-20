@@ -33,6 +33,10 @@ class VTable:
         else:
             return "".join([x.to_html() for x in self])
 
+    def do_typograf(self):
+        for item in self.items:
+            item.do_typograf()
+
     def parse(self, table: Table) -> []:
         rows_len = len(table.rows)
         columns_len = len(table.columns)

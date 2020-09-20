@@ -9,6 +9,7 @@ def main():
         if not doc.startswith(".") and not doc.startswith("~"):
             print(f"Started parsing  ({i}/{len(docs)}): {doc}")
             document = VDocument.from_file(f"docs{os.sep}{doc}")
+            document.do_typograf()
             document.store_markdown(f"markdown{os.sep}{doc}.md")
             document.store_html(f"html{os.sep}{doc}.html")
             print(f"Finished parsing ({i}/{len(docs)}): {doc}")

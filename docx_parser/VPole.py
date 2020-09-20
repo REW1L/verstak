@@ -100,6 +100,13 @@ class VPole:
                 self.right_parts = [VText(right_paragraph_part.text)]
         self.__clean_right_parts()
 
+    def do_typograf(self):
+        self.left_parts[0].do_typograf(nobr_enabled=False)
+        for paragraph in self.left_parts[1:]:
+            paragraph.do_typograf()
+        for paragraph in self.right_parts:
+            paragraph.do_typograf(nobr_enabled=False)
+
     @staticmethod
     def parse_poles(table: Table) -> list:
         poles = []

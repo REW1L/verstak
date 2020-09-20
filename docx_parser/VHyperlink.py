@@ -2,11 +2,13 @@ from lxml.etree import _Element
 from docx.opc.rel import _Relationship
 from docx.text.paragraph import Paragraph
 
+from .VText import VText
 
-class VHyperlink:
+
+class VHyperlink(VText):
     def __init__(self, hyperlink: _Element = None, paragraph: Paragraph = None):
+        super(VHyperlink, self).__init__()
         self.url = ""
-        self.text = ""
         self.raw = hyperlink
         if hyperlink is not None:
             self.parse(hyperlink, paragraph)
@@ -24,10 +26,13 @@ class VHyperlink:
             else:
                 return f"{{{self.text}}}({self.url})"
         else:
+            warning = ""
+            if self.glue_warning:
+                warning = ' class="verstak_glue_warning"'
             if self.text.endswith(" "):
-                return f'<a href="{self.url}" target="_blank">{self.text[:-1]}</a> '
+                return f'<a href="{self.url}" target="_blank"{warning}>{self.text[:-1]}</a> '
             else:
-                return f'<a href="{self.url}" target="_blank">{self.text}</a>'
+                return f'<a href="{self.url}" target="_blank"{warning}>{self.text}</a>'
 
     def parse(self, hyperlink: _Element, paragraph: Paragraph):
         url_id = None

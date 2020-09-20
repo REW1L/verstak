@@ -3,8 +3,10 @@ from docx.oxml.numbering import CT_NumPr
 from docx.oxml.text.parfmt import CT_PPr
 from docx.text.paragraph import Paragraph
 
+from .VText import VText
 
-class VListParagraph:
+
+class VListParagraph(VText):
     class Type(Enum):
         NONE = 0
         NUMERIC = 1
@@ -29,7 +31,7 @@ class VListParagraph:
             return f"[/{ending}"
 
     def __init__(self, list_text: CT_PPr = None, paragraph: Paragraph = None):
-        self.text = ""
+        super(VListParagraph, self).__init__()
         self.level = 0
         self.type = VListParagraph.Type.NONE
         self.raw = list_text

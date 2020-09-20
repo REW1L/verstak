@@ -23,3 +23,6 @@ class VPicture:
     def parse(self, caption: str = "") -> str:
         self.caption = caption
         return str(self)
+
+    def do_typograf(self):
+        pass

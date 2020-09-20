@@ -1,9 +1,11 @@
 from docx.oxml.text.run import CT_R
 
+from .VText import VText
 
-class VBoldText:
+
+class VBoldText(VText):
     def __init__(self, bold_text: CT_R = None):
-        self.text = ""
+        super(VBoldText, self).__init__()
         self.bold = False
         if bold_text is not None:
             self.parse(bold_text)
@@ -18,7 +20,10 @@ class VBoldText:
 
     def to_html(self):
         if self.bold:
-            return f"<strong>{self.text}</strong>"
+            warning = ""
+            if self.glue_warning:
+                warning = ' class="verstak_glue_warning"'
+            return f"<strong{warning}>{self.text}</strong>"
         else:
             return self.text
 

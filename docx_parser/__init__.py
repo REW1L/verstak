@@ -13,3 +13,4 @@ from .VPlashka import VPlashka
 from .VPole import VPole
 from .VBigTable import VBigTable
 from .VTable import VTable
+from .typograf import Glue

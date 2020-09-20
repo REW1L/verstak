@@ -20,7 +20,7 @@ class VPlashka:
         self.parts[key] = value
 
     def __iter__(self):
-        return self.parts
+        return self.parts.__iter__()
 
     def __str__(self):
         lines = ["```plashka"]
@@ -65,6 +65,10 @@ class VPlashka:
             html_parts[-1] += docx_parser.VListParagraph.type_to_html(list_type, False)
         html_parts.append("[/hl]")
         return "\n".join(html_parts)
+
+    def do_typograf(self):
+        for part in self:
+            part.do_typograf()
 
     def parse(self, cell: _Cell) -> []:
         for elem in cell._element:

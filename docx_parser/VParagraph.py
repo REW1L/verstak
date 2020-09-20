@@ -10,6 +10,7 @@ from .VHyperlink import VHyperlink
 from .VBoldText import VBoldText
 from .VText import VText
 from .VListParagraph import VListParagraph
+from .typograf import Glue
 
 
 class VParagraph:
@@ -76,6 +77,30 @@ class VParagraph:
             return html_str
         else:
             return "".join([x.to_html() for x in html_list]).replace("\n", "")
+
+    def __rebuild_paragraph(self):
+        alt_part_index = 0
+        for index in range(len(self.parts)):
+            if index == len(self.parts) - 1:
+                return
+            if type(self[index] == VHyperlink):
+                continue
+            if type(self[index]) == type(self[index+1]):
+                alt_part_index = index
+        head = self.parts[:alt_part_index]
+        head.extend(self[alt_part_index].__class__(text=self[alt_part_index].text+self[alt_part_index+1].text))
+        if len(self.parts) >= alt_part_index + 2:
+            head.extend(self[alt_part_index])
+        self.parts = head
+        self.__rebuild_paragraph()
+
+    def do_typograf(self, nobr_enabled: bool = True):
+        if self.is_picture() or self.text.strip() == "":
+            return
+        self.__rebuild_paragraph()
+        for part in self:
+            if type(part) != VListParagraph:
+                part.do_typograf(nobr_enabled)
 
     def is_picture(self) -> bool:
         for part in self.parts:

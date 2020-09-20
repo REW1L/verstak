@@ -11,3 +11,6 @@ class VBigTable:
 
     def to_html(self):
         return f"<p>{str(self)}</p>"
+
+    def do_typograf(self):
+        pass
