@@ -56,4 +56,6 @@ git pull
 # start program
 . ./venv/bin/activate
 
+pip3 install -r requirements.txt
+
 python main.py $@
