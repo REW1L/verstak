@@ -1,21 +1,48 @@
 import os
+import argparse
 from docx_parser import VDocument
 
 
-def main():
-    docs = os.listdir("docs")
+def main(in_path: str, out_path: str):
+    if not os.path.isdir(out_path):
+        os.makedirs(out_path)
+    if os.path.isdir(in_path):
+        print(f"Listing directory {in_path}")
+        process_directory(in_path, out_path)
+    elif os.path.isfile(in_path):
+        process_file(in_path, out_path)
+
+
+def process_file(in_path: str, out_path: str):
+    doc = os.path.basename(in_path)
+    print(f"Started parsing {in_path}")
+    document = VDocument.from_file(f"{in_path}")
+    document.do_typograf()
+    document.store_html(f"{out_path}{os.sep}{doc}.html")
+    print(f"Finished parsing {in_path}")
+    print(f"Output file: {out_path}{os.sep}{doc}.html")
+
+
+def process_directory(in_path: str, out_path: str):
+    docs = os.listdir(in_path)
     i = 1
     for doc in docs:
         if not doc.startswith(".") and not doc.startswith("~"):
             print(f"Started parsing  ({i}/{len(docs)}): {doc}")
-            document = VDocument.from_file(f"docs{os.sep}{doc}")
+            document = VDocument.from_file(f"{in_path}{os.sep}{doc}")
             document.do_typograf()
-            document.store_markdown(f"markdown{os.sep}{doc}.md")
-            document.store_html(f"html{os.sep}{doc}.html")
+            document.store_html(f"{out_path}{os.sep}{doc}.html")
             print(f"Finished parsing ({i}/{len(docs)}): {doc}")
         i += 1
-    print("Done")
+    print(f"Done {in_path}")
+    print(f"Files are stored in {out_path}")
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description='Make html from docx.')
+    parser.add_argument('input', metavar='in', type=str,
+                        help='Input file/directory', default=f'{os.getcwd()}{os.sep}docs')
+    parser.add_argument('output', metavar='out', type=str, nargs='?',
+                        help='Output directory', default=f"{os.getcwd()}{os.sep}html")
+    args = parser.parse_args()
+    main(args.input, args.output)

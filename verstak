@@ -1,0 +1,59 @@
+#!/usr/bin/env zsh
+
+
+if [ -z "$(command -v brew)" ]; then
+  echo "Homebrew should be installed, do you want to proceed? [Y/n]"
+  install_homebrew=""
+  while true; do
+    read -r install_homebrew
+    if [ -z "${install_homebrew}" ] || [ "${install_homebrew}" == "Y" ] || [ "${install_homebrew}" == "y" ]; then
+      echo "Installing homebrew";
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)";
+      echo "Homebrew was installed";
+    elif [ "${install_homebrew}" == "N" ] || [ "${install_homebrew}" == "n" ]; then
+      echo "Homebrew is not installed, exiting"
+      exit 0
+    else
+      echo "Y/n?"
+    fi;
+  done
+fi
+
+if [ -z "$(command -v pip3)" ]; then
+  echo "python3 should be installed, do you want to proceed? [Y/n]"
+  install_python3=""
+  while true; do
+    read -r install_python3
+    if [ -z "${install_python3}" ] || [ "${install_python3}" == "Y" ] || [ "${install_python3}" == "y" ]; then
+      echo "Installing python3";
+      brew install python3
+      brew unlink python@3 && brew link python@3
+      echo "Python3 was installed";
+    elif [ "${install_python3}" == "N" ] || [ "${install_python3}" == "n" ]; then
+      echo "Python3 is not installed, exiting"
+      exit 0
+    else
+      echo "Y/n?"
+    fi;
+  done
+fi
+
+if [ -z "$(command -v git)" ]; then
+  brew install git
+fi
+
+if [ -z "$(pip3 list | grep virtualenv)" ]; then
+  pip3 install virtualenv
+fi
+
+if ! [ -d "venv" ]; then
+  python3 -m virtualenv venv
+fi
+
+# check for updates
+git pull
+
+# start program
+. ./venv/bin/activate
+
+python main.py $@
