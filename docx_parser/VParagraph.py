@@ -78,26 +78,34 @@ class VParagraph:
         else:
             return "".join([x.to_html() for x in html_list]).replace("\n", "")
 
-    def __rebuild_paragraph(self):
-        alt_part_index = 0
-        for index in range(len(self.parts)):
-            if index == len(self.parts) - 1:
-                return
-            if type(self[index] == VHyperlink):
+    def __enlarge_parts(self):
+        if self.is_picture():
+            return
+        for index in range(1, len(self.parts)):
+            if type(self[index]) == VHyperlink:
                 continue
-            if type(self[index]) == type(self[index+1]):
+            if type(self[index]) == type(self[index-1]):
                 alt_part_index = index
+                break
+            elif self[index].text.strip() == "" and type(self[index-1]) != VHyperlink:
+                alt_part_index = index
+                break
+        else:
+            return
         head = self.parts[:alt_part_index]
-        head.extend(self[alt_part_index].__class__(text=self[alt_part_index].text+self[alt_part_index+1].text))
-        if len(self.parts) >= alt_part_index + 2:
-            head.extend(self[alt_part_index])
+        head[-1].text = self[alt_part_index-1].text + self[alt_part_index].text
+        if len(self.parts) > alt_part_index:
+            head.extend(self.parts[alt_part_index+1:])
         self.parts = head
-        self.__rebuild_paragraph()
+        self.__enlarge_parts()
 
     def do_typograf(self, nobr_enabled: bool = True):
         if self.is_picture() or self.text.strip() == "":
             return
-        self.__rebuild_paragraph()
+        # if self.text.find("—") != -1:
+        #     for part in self.parts:
+        #         print(str(type(part)) + " " + part.text)
+        #     print()
         for part in self:
             if type(part) != VListParagraph:
                 part.do_typograf(nobr_enabled)
@@ -152,8 +160,11 @@ class VParagraph:
         if type(run[0]) == CT_RPr:
             if run[0].b is not None:
                 part = VBoldText(run)
-                if self.__merge_last_bold_text(part):
-                    return None
+                if part.bold:
+                    if self.__merge_last_bold_text(part):
+                        return None
+                else:
+                    part = VText(part.text)
             elif len([tag for tag in run if tag.tag.endswith("drawing")]) > 0:
                 part = VPicture(run)
             else:
@@ -205,4 +216,5 @@ class VParagraph:
                 self.parts.append(part)
         if self.is_picture():
             self.__move_text_to_caption()
+        self.__enlarge_parts()
         return str(self)

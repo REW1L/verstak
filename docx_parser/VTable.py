@@ -42,7 +42,7 @@ class VTable:
         columns_len = len(table.columns)
         if rows_len < 1:
             return []
-        if columns_len == 2:
+        if columns_len == 2 and len(table.columns[0].cells) > 0 and len(table.columns[1].cells) > 0:
             left_column: _Column = table.columns[0]
             right_column: _Column = table.columns[1]
             if float(left_column._gridCol.values()[0]) * 0.6 > float(right_column._gridCol.values()[0]) and \

@@ -54,7 +54,8 @@ class VListParagraph(VText):
         option: CT_NumPr = list_text.numPr
         self.text = paragraph.text
         self.level = option.ilvl.val
-        if paragraph.text.strip()[0].isupper() and paragraph.text.strip().endswith("."):
+        strip_text = paragraph.text.strip()
+        if strip_text != "" and strip_text[0].isupper() and strip_text.endswith("."):
             self.type = VListParagraph.Type.NUMERIC
         else:
             self.type = VListParagraph.Type.BULLET
