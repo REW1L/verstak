@@ -8,8 +8,8 @@ class Glue:
         re.compile('[А-ЯЁа-яё]([  ])(ли|ль|же|ж|бы|б)[,;:?!"‘“» ]', re.MULTILINE),
     ]
     __nbsp_post_patterns = [
-        re.compile("(^|[^—0-9])[0-9][0-9][0-9,]+([  ])[^ ]+", re.MULTILINE),
-        re.compile("[^А-ЯЁа-яё—\\-]{}([  ]){}".format("([Бб]ез|[Пп]ри|[Нн]ад|[Пп]од|[Пп]ро|[Дд]ля)",
+        re.compile("(^|[^—0-9])[0-9][0-9][0-9,]+([  ])[A-Za-zА-Яа-я]+", re.MULTILINE),
+        re.compile("[^А-ЯЁа-яё—\\-]{}([  ]){}".format("([Бб]ез|[Пп]ри|[Нн]ад|[Пп]од|[Пп]ро|[Дд]ля|[Уу]же)",
                                                          "([A-Za-zА-Яа-я]+|[0-9]+)"),
                    re.MULTILINE | re.IGNORECASE),
         re.compile("([Тт]ак([  ])и|[Кк]ак([  ])и|[Вв]се([  ])равно|[Кк]роме([  ])того)[^А-ЯЁа-яё]",
@@ -24,7 +24,7 @@ class Glue:
     ]
 
     __span_patterns = [
-        re.compile('[^А-ЯЁа-яё]([А-ЯЁа-яё]+[  ](ли|ль|же|ж|бы|б))[^А-ЯЁа-яё]', re.MULTILINE),
+        re.compile('(^|[^А-ЯЁа-яё])([А-ЯЁа-яё]+[  ](ли|ль|же|ж|бы|б))([^А-ЯЁа-яё]|$)', re.MULTILINE),
     ]
 
     @staticmethod
@@ -34,8 +34,8 @@ class Glue:
             founds = pattern.finditer(sentence)
             if founds is not None:
                 for search in founds:
-                    if search.start(1) >= 0:
-                        span_indexes.append([search.start(1), search.end(1)])
+                    if search.start(2) >= 0:
+                        span_indexes.append([search.start(2), search.end(2)])
         return span_indexes
 
     @staticmethod
