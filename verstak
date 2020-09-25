@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
 
+SCRIPT_DIR="$(dirname "$0")"
+export PIP_DISABLE_PIP_VERSION_CHECK=1
 
 if [ -z "$(command -v brew)" ]; then
   echo "Homebrew should be installed, do you want to proceed? [Y/n]"
@@ -19,7 +21,7 @@ if [ -z "$(command -v brew)" ]; then
   done
 fi
 
-if [ -z "$(command -v pip3)" ]; then
+if [ "$(command -v python3)" != "/usr/local/bin/python3" ]; then
   echo "python3 should be installed, do you want to proceed? [Y/n]"
   install_python3=""
   while true; do
@@ -46,16 +48,20 @@ if [ -z "$(pip3 list | grep virtualenv)" ]; then
   pip3 install virtualenv
 fi
 
-if ! [ -d "venv" ]; then
+if ! [ -d "${SCRIPT_DIR}/venv" ]; then
   python3 -m virtualenv venv
 fi
 
 # check for updates
+pushd "${SCRIPT_DIR}"
 git pull
+popd
 
 # start program
-. ./venv/bin/activate
+. "${SCRIPT_DIR}/venv/bin/activate"
 
-pip3 install -r requirements.txt
+if [ -z "$(pip3 list | grep python-docx)" ]; then
+  pip3 install --quiet -r "${SCRIPT_DIR}/requirements.txt"
+fi
 
-python main.py $@
+python "${SCRIPT_DIR}/main.py" $@
