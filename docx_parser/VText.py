@@ -72,3 +72,4 @@ class VText:
             self.__add_nobr()
         self.__add_nbsp()
         self.__add_span()
+        return self.text

@@ -80,10 +80,37 @@ class VDocument:
             blank_line_caption_found = False
         return self.parts
 
+    def __split_paragraphs(self):
+        split_index = -1
+        for index in range(len(self.parts)):
+            if type(self.parts[index]) == VParagraph and self.parts[index].list_type is None:
+                if self.parts[index].find_new_lines() != -1:
+                    split_index = index
+                    break
+        if split_index != -1:
+            index = self.parts[split_index].find_new_lines()
+            if len(self.parts[split_index].parts) == index - 1:
+                return
+            new_texts = self.parts[split_index][index].text.split("\n")
+            first_paragraph = VParagraph()
+            first_paragraph.parts = self.parts[split_index][:index]
+            second_paragraph = VParagraph()
+            second_paragraph.parts = self.parts[split_index][index:]
+            first_paragraph.parts.extend([VText(x) for x in new_texts[:-1]])
+            second_paragraph.parts[0] = VText(new_texts[-1])
+            parts = self.parts[:split_index]
+            parts.append(first_paragraph)
+            parts.append(second_paragraph)
+            if len(self.parts) > split_index + 1:
+                parts.extend(self.parts[split_index+1:])
+            self.parts = parts
+            self.__split_paragraphs()
+
     def to_html(self):
         html_parts = []
         is_list = False
         list_type = None
+        self.__split_paragraphs()
         for part in self.parts:
             if type(part) == VParagraph:
                 if part.text.strip() == "":

@@ -4,8 +4,9 @@ import re
 class Glue:
     NBSP = "&nbsp;"
     __nbsp_pre_patterns = [
-        re.compile("[0-9]+([  ])°C", re.MULTILINE),
-        re.compile('[А-ЯЁа-яё]([  ])(ли|ль|же|ж|бы|б)[,;:?!"‘“» ]', re.MULTILINE),
+        re.compile("([0-9]+)([  ])°C", re.MULTILINE),
+        re.compile('([А-ЯЁа-яё])([  ])(ли|ль|же|ж|бы|б)[,;:?!"‘“» ]', re.MULTILINE),
+        re.compile("(^|[^0-9—])[0-9,]+([  ])(тыс|млн|млрд|трлн)", re.MULTILINE),
     ]
     __nbsp_post_patterns = [
         re.compile("(^|[^—0-9])[0-9][0-9][0-9,]+([  ])[A-Za-zА-Яа-я]+", re.MULTILINE),
@@ -14,12 +15,11 @@ class Glue:
                    re.MULTILINE | re.IGNORECASE),
         re.compile("([Тт]ак([  ])и|[Кк]ак([  ])и|[Вв]се([  ])равно|[Кк]роме([  ])того)[^А-ЯЁа-яё]",
                    re.MULTILINE),
-        re.compile("(^|[^0-9—])[0-9,]+([  ])(тыс|млн|млрд|трлн)", re.MULTILINE),
     ]
     __nobr_patterns = [
         re.compile("[^А-ЯЁа-яё]([A-Za-zА-Яа-я]+[  ]?-[  ]?(то|либо|нибудь|ка))[^А-ЯЁа-яё]", re.MULTILINE),
-        re.compile("([0-9]+[  ]?— ?[0-9]+[  ]?([A-Za-zА-Яа-я]+\\.?|[^,.;/?'|`~! )(]+))", re.MULTILINE),
-        re.compile("([иИ]з-за|[Вв]се-таки)", re.MULTILINE),
+        re.compile("([0-9]+[  ]?— ?[0-9]+[  ]?([A-Za-zА-Яа-я/]+\\.?|[^,.;?'|`~! )(]+))", re.MULTILINE),
+        re.compile("([иИ]з-за|[Вв]се-таки|т\\. д\\.|т\\. п\\.)", re.MULTILINE),
         re.compile("[^А-ЯЁа-яё]((По|В|Во|во|в|по)[  ]?-[  ]?[A-Za-zА-Яа-я]+)[^А-ЯЁа-яё]", re.MULTILINE),
     ]
 
@@ -57,7 +57,7 @@ class Glue:
             if founds is not None:
                 for search in founds:
                     if search.start(1) >= 0:
-                        index_list.append(search.start(1))
+                        index_list.append(search.start(2))
         return index_list
 
     @staticmethod
@@ -88,4 +88,6 @@ if __name__ == "__main__":
                         ", в которой объяснят, как и почему вы доставляете им неудобства. И даже эта записка все"
                         " равно будет очень вежливой — только если вы уж очень доведете шведа, он"
                         " наставит в записке восклицательных знаков.")
+    from docx_parser.VText import VText
+    print(VText("678 678 фывфыв").do_typograf())
     print(indexes)

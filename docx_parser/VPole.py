@@ -77,7 +77,7 @@ class VPole:
                 paragraph_part: VHyperlink = parts[0][0]
                 if type(paragraph_part) == VHyperlink:
                     self.url = paragraph_part.url
-                    parts = [VText(paragraph_part.text)]
+                    parts[0] = VText(parts[0].text)
         self.right_parts = parts
 
     def parse(self, row: _Row):
@@ -97,7 +97,7 @@ class VPole:
             right_paragraph_part: VHyperlink = self.right_parts[0][0]
             if type(right_paragraph_part) == VHyperlink:
                 self.url = right_paragraph_part.url
-                self.right_parts = [VText(right_paragraph_part.text)]
+                self.right_parts = [VText(self.right_parts[0].text)]
         self.__clean_right_parts()
 
     def do_typograf(self):

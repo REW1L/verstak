@@ -102,10 +102,6 @@ class VParagraph:
     def do_typograf(self, nobr_enabled: bool = True):
         if self.is_picture() or self.text.strip() == "":
             return
-        # if self.text.find("—") != -1:
-        #     for part in self.parts:
-        #         print(str(type(part)) + " " + part.text)
-        #     print()
         for part in self:
             if type(part) != VListParagraph:
                 part.do_typograf(nobr_enabled)
@@ -193,6 +189,14 @@ class VParagraph:
         if img is not None and "".join(str(x) for x in caption) != "":
             new_parts[0].caption = caption
             self.parts = new_parts
+
+    def find_new_lines(self):
+        split_index = -1
+        for index in range(len(self.parts)):
+            if self.parts[index].text.find("\n") != -1:
+                split_index = index
+                break
+        return split_index
 
     def parse(self, paragraph: Paragraph, title: bool = True) -> str:
         self.raw = paragraph
