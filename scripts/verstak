@@ -5,25 +5,26 @@ import argparse
 from docx_parser import VDocument
 
 
-def main(in_path: str, out_path: str):
+def main(in_path: str, out_path: str, tipograf_enabled: bool):
     if os.path.isdir(in_path):
         if not os.path.isdir(out_path):
             os.makedirs(out_path)
         print(f"Listing directory {in_path}")
-        process_directory(in_path, out_path)
+        process_directory(in_path, out_path, tipograf_enabled)
     elif os.path.isfile(in_path):
         if not os.path.isdir(out_path):
             os.makedirs(out_path)
-        process_file(in_path, out_path)
+        process_file(in_path, out_path, tipograf_enabled)
     else:
         print(f"Error: {in_path} doesn't exist")
 
 
-def process_file(in_path: str, out_path: str):
+def process_file(in_path: str, out_path: str, tipograf_enabled: bool):
     doc = os.path.basename(in_path)
     print(f"Started parsing {in_path}")
     document = VDocument.from_file(f"{in_path}")
-    document.do_typograf()
+    if tipograf_enabled:
+        document.do_typograf()
     document.store_html(f"{out_path}{os.sep}{doc}.html")
     print(f"Finished parsing {in_path}")
     print(f"Output file: {out_path}{os.sep}{doc}.html")
@@ -50,5 +51,7 @@ if __name__ == "__main__":
                         help='Input file/directory', default=f'{os.getcwd()}{os.sep}docs')
     parser.add_argument('output', metavar='out', type=str, nargs='?',
                         help='Output directory', default=f"{os.getcwd()}{os.sep}")
+    parser.add_argument('-t', dest='tipograf_enabled', action='store_false',
+                        help='Disable tipograf')
     args = parser.parse_args()
-    main(args.input, args.output)
+    main(args.input, args.output, args.tipograf_enabled)
