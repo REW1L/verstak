@@ -64,4 +64,4 @@ if [ -z "$(pip3 list | grep python-docx)" ]; then
   pip3 install --quiet -r "${SCRIPT_DIR}/requirements.txt"
 fi
 
-python "${SCRIPT_DIR}/main.py" $@
+${SCRIPT_DIR}/scripts/verstak $@
