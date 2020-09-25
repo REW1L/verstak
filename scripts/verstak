@@ -6,12 +6,14 @@ from docx_parser import VDocument
 
 
 def main(in_path: str, out_path: str):
-    if not os.path.isdir(out_path):
-        os.makedirs(out_path)
     if os.path.isdir(in_path):
+        if not os.path.isdir(out_path):
+            os.makedirs(out_path)
         print(f"Listing directory {in_path}")
         process_directory(in_path, out_path)
     elif os.path.isfile(in_path):
+        if not os.path.isdir(out_path):
+            os.makedirs(out_path)
         process_file(in_path, out_path)
     else:
         print(f"Error: {in_path} doesn't exist")
@@ -31,7 +33,7 @@ def process_directory(in_path: str, out_path: str):
     docs = os.listdir(in_path)
     i = 1
     for doc in docs:
-        if not doc.startswith(".") and not doc.startswith("~"):
+        if not doc.startswith(".") and not doc.startswith("~") and doc.endswith("docx"):
             print(f"Started parsing  ({i}/{len(docs)}): {doc}")
             document = VDocument.from_file(f"{in_path}{os.sep}{doc}")
             document.do_typograf()
@@ -47,6 +49,6 @@ if __name__ == "__main__":
     parser.add_argument('input', metavar='in', type=str,
                         help='Input file/directory', default=f'{os.getcwd()}{os.sep}docs')
     parser.add_argument('output', metavar='out', type=str, nargs='?',
-                        help='Output directory', default=f"{os.getcwd()}{os.sep}html")
+                        help='Output directory', default=f"{os.getcwd()}{os.sep}")
     args = parser.parse_args()
     main(args.input, args.output)
