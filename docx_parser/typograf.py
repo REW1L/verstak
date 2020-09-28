@@ -73,9 +73,10 @@ class Glue:
 
     @staticmethod
     def nbsp(sentence) -> list:
-        indexes = Glue.__nbsp_pre(sentence)
-        indexes.extend(Glue.__nbsp_post(sentence))
-        return indexes
+        indexes = set()
+        indexes.update(Glue.__nbsp_pre(sentence))
+        indexes.update(Glue.__nbsp_post(sentence))
+        return list(indexes)
 
 
 if __name__ == "__main__":
@@ -90,4 +91,6 @@ if __name__ == "__main__":
                         " наставит в записке восклицательных знаков.")
     from docx_parser.VText import VText
     print(VText("678 678 фывфыв").do_typograf())
+    print(VText("678,67 млн долларов").do_typograf())
+
     print(indexes)
