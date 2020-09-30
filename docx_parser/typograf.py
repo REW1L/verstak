@@ -24,7 +24,7 @@ class Glue:
     ]
 
     __span_patterns = [
-        re.compile('(^|[^А-ЯЁа-яё])([А-ЯЁа-яё]+[  ](ли|ль|же|ж|бы|б))([^А-ЯЁа-яё]|$)', re.MULTILINE),
+        re.compile(f'(^|[^А-ЯЁа-яё])([А-ЯЁа-яё]+({NBSP}|[  ])(ли|ль|же|ж|бы|б))([^А-ЯЁа-яё]|$)', re.MULTILINE),
     ]
 
     @staticmethod
