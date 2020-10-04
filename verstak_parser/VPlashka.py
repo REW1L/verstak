@@ -3,7 +3,7 @@ from docx.oxml.text.paragraph import CT_P
 from docx.text.paragraph import Paragraph
 from docx.table import Table, _Cell
 
-import docx_parser
+import verstak_parser
 
 
 class VPlashka:
@@ -43,7 +43,7 @@ class VPlashka:
         list_type = None
         first_title = True
         for part in self.parts:
-            if type(part) == docx_parser.VParagraph:
+            if type(part) == verstak_parser.VParagraph:
                 if part.text.strip() == "":
                     continue
                 if first_title:
@@ -62,19 +62,19 @@ class VPlashka:
                 if not is_list and part.list_type is not None:
                     list_type = part.list_type
                     is_list = True
-                    html_parts.append(f"{docx_parser.VListParagraph.type_to_html(list_type)}\n")
+                    html_parts.append(f"{verstak_parser.VListParagraph.type_to_html(list_type)}\n")
                 elif is_list and part.list_type is None:
-                    html_parts[-1] += docx_parser.VListParagraph.type_to_html(list_type, False)
+                    html_parts[-1] += verstak_parser.VListParagraph.type_to_html(list_type, False)
                     is_list = False
                 if is_list and part.list_type is not None:
                     html_parts[-1] += f"{part.to_html()}\n"
                     continue
             elif is_list:
-                html_parts[-1] += docx_parser.VListParagraph.type_to_html(list_type, False)
+                html_parts[-1] += verstak_parser.VListParagraph.type_to_html(list_type, False)
                 is_list = False
             html_parts.append(part.to_html())
         if is_list:  # List can end at the end of the document so it should be closed
-            html_parts[-1] += docx_parser.VListParagraph.type_to_html(list_type, False)
+            html_parts[-1] += verstak_parser.VListParagraph.type_to_html(list_type, False)
         html_parts.append("[/hl]")
         return "\n".join(html_parts)
 
@@ -94,7 +94,7 @@ class VPlashka:
         """
         for elem in cell._element:
             if type(elem) == CT_P:
-                self.parts.append(docx_parser.VParagraph((Paragraph(elem, cell))))
+                self.parts.append(verstak_parser.VParagraph((Paragraph(elem, cell))))
             elif type(elem) == CT_Tbl:
-                self.parts.extend(docx_parser.VTable(Table(elem, cell)).items)
+                self.parts.extend(verstak_parser.VTable(Table(elem, cell)).items)
         return self.parts

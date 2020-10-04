@@ -104,7 +104,7 @@ if __name__ == "__main__":
                         ", в которой объяснят, как и почему вы доставляете им неудобства. И даже эта записка все"
                         " равно будет очень вежливой — только если вы уж очень доведете шведа, он"
                         " наставит в записке восклицательных знаков.")
-    from docx_parser.VText import VText
+    from verstak_parser.VText import VText
     print(VText("678 678 фывфыв").do_typograf())
     print(VText("678,67 млн долларов").do_typograf())
 
