@@ -10,6 +10,10 @@ class VBigTable:
         return "## BIG TABLE"
 
     def to_html(self):
+        """
+        Get html representation
+        :return: <p> with text BIG TABLE
+        """
         return f"<p>{str(self)}</p>"
 
     def do_typograf(self):

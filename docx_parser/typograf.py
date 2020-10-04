@@ -28,7 +28,12 @@ class Glue:
     ]
 
     @staticmethod
-    def span(sentence):
+    def span(sentence) -> list:
+        """
+        Get indexes for span wrapping in text
+        :param sentence: text to get indexes from
+        :return: list of indexes where it needs to wrap [[start, end], [start, end]]
+        """
         span_indexes = []
         for pattern in Glue.__span_patterns:
             founds = pattern.finditer(sentence)
@@ -40,6 +45,11 @@ class Glue:
 
     @staticmethod
     def nobr(sentence) -> list:
+        """
+        Get indexes for nobr wrapping in text
+        :param sentence: text to get indexes from
+        :return: list of indexes where it needs to wrap [[start, end], [start, end]]
+        """
         nobr_indexes = []
         for pattern in Glue.__nobr_patterns:
             founds = pattern.finditer(sentence)
@@ -73,6 +83,11 @@ class Glue:
 
     @staticmethod
     def nbsp(sentence) -> list:
+        """
+        Get indexes for nbsp replacing in the text
+        :param sentence: text to get indexes from
+        :return: list of indexes where it needs to replace [index1, index2]
+        """
         indexes = set()
         indexes.update(Glue.__nbsp_pre(sentence))
         indexes.update(Glue.__nbsp_post(sentence))

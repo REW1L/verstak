@@ -7,6 +7,10 @@ from .VText import VText
 
 class VPole:
     def __init__(self, row: _Row = None):
+        """
+        Class for representation of Pole
+        :param row: row of the table with pole
+        """
         self.title = ""
         self.left_parts = []
         self.right_parts = []
@@ -36,8 +40,13 @@ class VPole:
         return "\n".join(section)
 
     def to_html(self):
+        """
+        Get html representation
+        :return: html representation
+        """
         url = ""
         if self.url != "":
+            # links to journal.tinkoff.ru should be cut
             if self.url.startswith("https://journal.tinkoff.ru"):
                 url = f' ref="{self.url[27:]}"'
             else:
@@ -47,11 +56,15 @@ class VPole:
             html_parts.extend([x.to_html() for x in self.right_parts])
             html_parts.append("[/aside]")
         html_parts.append("</div>")
+        # all of the paragraphs after the first one on the left part should go after pole
         for part in self.left_parts[1:]:
             html_parts.append(part.to_html())
         return "\n".join(html_parts)
 
     def __clean_right_parts(self):
+        """
+        Clean right part from urls if there are some links to journal.tinkoff.ru
+        """
         parts = []
         if len(self.right_parts) > 0:
             if self.url.startswith("https://journal.tinkoff.ru"):
@@ -80,6 +93,10 @@ class VPole:
         self.right_parts = parts
 
     def parse(self, row: _Row):
+        """
+        Parse row to VPole
+        :param row: row from docx.table.Table
+        """
         left: _Cell = row.cells[0]
         right: _Cell = row.cells[1]
         self.left_parts = []
@@ -100,6 +117,10 @@ class VPole:
         self.__clean_right_parts()
 
     def do_typograf(self):
+        """
+        Rework text of parts by rules from typograph
+        :return: resulted text
+        """
         self.left_parts[0].do_typograf(nobr_enabled=False)
         for paragraph in self.left_parts[1:]:
             paragraph.do_typograf()
@@ -108,6 +129,11 @@ class VPole:
 
     @staticmethod
     def parse_poles(table: Table) -> list:
+        """
+        Represent table as multiple poles and parse it
+        :param table: docx.table.Table to parse
+        :return: list of VPoles
+        """
         poles = []
         for row in table.rows:
             right_text = "".join([VParagraph(x).text for x in row.cells[1].paragraphs])

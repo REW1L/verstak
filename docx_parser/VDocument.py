@@ -17,6 +17,10 @@ from .VPlashka import VPlashka
 
 class VDocument:
     def __init__(self, document: Document = None):
+        """
+        Class for docx document
+        :param document: raw docx document
+        """
         self.first_table = None
         self.first_title = None
         self.raw = document
@@ -25,18 +29,26 @@ class VDocument:
             self.parse(document)
 
     def __parse_paragraph(self, element: CT_P, document: Document, caption: bool) -> Optional[VParagraph]:
+        """
+        Parse CT_P element from docx document
+        :param element: CT_P from document
+        :param document: current docx.document.Document object
+        :param caption: parse CT_P as caption for picture
+        :return: VParagraph or None if recognition is failed or caption is applied to previous parts
+        """
         paragraph = VParagraph(Paragraph(element, document))
-        if not self.first_title and len(self.parts) > 0:
+        if not self.first_title and len(self.parts) > 0:  # first title is absent in document
             self.first_title = False
-        if self.first_title is None and paragraph.title:
+        if self.first_title is None and paragraph.title:  # first title in the document should be skipped
             self.first_title = paragraph
             return None
         if not caption or paragraph.is_picture():
             return paragraph
         elif type(paragraph[0]) == VText and paragraph.title:
             return paragraph
-        elif str(paragraph) != "":
+        elif str(paragraph) != "":  # paragraph should have at least one symbol
             imgs_count = 0
+            # caption should be applied to the first picture in a sequence
             for part in reversed(self.parts):
                 if type(part) == VParagraph and part.is_picture():
                     imgs_count += 1
@@ -50,7 +62,13 @@ class VDocument:
         return None
 
     def __parse_table(self, element: CT_Tbl, document: Document):
-        if self.first_table is None:
+        """
+        Parse CT_Tbl from document and add VTabel to self.parts
+        :param element: CT_Tbl from document
+        :param document: current docx.document.Document object
+        :return: None
+        """
+        if self.first_table is None:  # the first table in a document should be skipped
             self.first_table = VTable(Table(element, document))
             return None
         table = VTable(Table(element, document))
@@ -60,7 +78,12 @@ class VDocument:
                 self.parts[-2].title = True
                 self.parts[-2].title_level = 2
 
-    def parse(self, document: Document):
+    def parse(self, document: Document) -> list:
+        """
+        Parse docx document
+        :param document: a docx document to parse
+        :return: parts of the resulted document
+        """
         self.raw = document
         blank_line_caption_found = False
         caption = False
@@ -82,6 +105,9 @@ class VDocument:
         return self.parts
 
     def __split_paragraphs(self):
+        """
+        Split paragraphs by new lines
+        """
         split_index = -1
         for index in range(len(self.parts)):
             if type(self.parts[index]) == VParagraph and self.parts[index].list_type is None:
@@ -107,7 +133,12 @@ class VDocument:
             self.parts = parts
             self.__split_paragraphs()
 
-    def to_html(self, allow_header_links: bool = False):
+    def to_html(self, allow_header_links: bool = False) -> str:
+        """
+        Get html representation
+        :param allow_header_links: allows links to be added for headers/titles
+        :return: html representation
+        """
         html_parts = []
         is_list = False
         list_type = None
@@ -116,6 +147,10 @@ class VDocument:
             if type(part) == VParagraph:
                 if part.text.strip() == "":
                     continue
+                # list logic:
+                # 1. First option appears and ul or ol is added
+                # 2. All list options are added
+                # 3. When anything but list option is got closing of ul or ol is added
                 if not is_list and part.list_type is not None:
                     list_type = part.list_type
                     is_list = True
@@ -131,28 +166,41 @@ class VDocument:
                 is_list = False
             if type(part) == VTable:
                 if part.type == VTable.TYPE.BIG_TABLE:
+                    # the table title should be h3 with class table-heading
                     if len(html_parts) > 0 and html_parts[-1].startswith("<h2>"):
                         html_parts[-1] = html_parts[-1].replace("<h2>", '<h3 class="table-heading">')
                         html_parts[-1] = html_parts[-1].replace("</h2>", '</h3>')
-            if type(part) in [VParagraph, VPlashka]:
+            if type(part) in [VParagraph, VPlashka]:  # VPlashka has headers in it
                 html_parts.append(part.to_html(allow_header_links=allow_header_links))
             else:
                 html_parts.append(part.to_html())
-        if is_list:
+        if is_list:  # List can end at the end of the document so it should be closed
             html_parts[-1] += VListParagraph.type_to_html(list_type, False)
-        return "\n\n".join(html_parts)
+        return "\n\n".join(html_parts)  # it should be an empty line between parts of the document
 
     def do_typograf(self):
+        """
+        Rework text by rules from typograph
+        """
         for part in self.parts:
             part.do_typograf()
 
     def store_html(self, path: str = f"html{os.sep}result.html", allow_header_links: bool = False):
+        """
+        Store document as file with html structure
+        :param path: output file path
+        :param allow_header_links: allows links to be added for headers/titles
+        """
         with open(path, "w") as result_file:
             result_file.write(self.to_html(allow_header_links=allow_header_links))
             result_file.write("\n")
             result_file.flush()
 
     def store_markdown(self, path: str = f"markdown{os.sep}result.md"):
+        """
+        Store document as file with markdown structure
+        :param path: output file path
+        """
         with open(path, "w") as result_file:
             for line in [str(x) for x in self.parts]:
                 result_file.write(f"{line}\n")
@@ -160,5 +208,10 @@ class VDocument:
 
     @staticmethod
     def from_file(doc_path: str):
+        """
+        Get VDocument from docx file
+        :param doc_path: docx file path
+        :return: resulted VDocument
+        """
         document: Document = docx.Document(doc_path)
         return VDocument(document)

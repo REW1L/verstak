@@ -9,12 +9,19 @@ from .VText import VText
 
 class VTable:
     class TYPE(Enum):
+        """
+        Type of VTable
+        """
         NONE = 0
         POLES = 1
         PLASHKA = 2
         BIG_TABLE = 3
 
     def __init__(self, table: Table = None):
+        """
+        Table representation (Can be VPole/VPlashka/VBigTable)
+        :param table: docx table to parse
+        """
         self.raw = table
         self.type = VTable.TYPE.NONE
         self.items = []
@@ -28,20 +35,37 @@ class VTable:
         return "".join([str(x) for x in self])
 
     def to_html(self):
+        """
+        Get html representation
+        :return: html representation
+        """
         if self.type == VTable.TYPE.POLES or self.type == VTable.TYPE.PLASHKA:
             return "\n\n".join([x.to_html() for x in self])
         else:
             return "".join([x.to_html() for x in self])
 
     def do_typograf(self):
+        """
+        Rework text of parts by rules from typograph
+        :return: resulted text
+        """
         for item in self.items:
             item.do_typograf()
 
     def parse(self, table: Table) -> []:
+        """
+        Parse docx table
+        :param table: docx table
+        :return: list of included items in table (VPole/VPlashka/VBigTable)
+        """
         rows_len = len(table.rows)
         columns_len = len(table.columns)
         if rows_len < 1:
             return []
+        # 1. Pole should have 2 columns, right column thinner than 60% of the left column
+        #    and text in the left part should be more than twice bigger than right part
+        # 2. If table has only one cell in it then it is Plashka
+        # 3. BigTable otherwise
         if columns_len == 2 and len(table.columns[0].cells) > 0 and len(table.columns[1].cells) > 0:
             left_column: _Column = table.columns[0]
             right_column: _Column = table.columns[1]
