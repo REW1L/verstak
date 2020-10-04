@@ -2,7 +2,7 @@
 
 import os
 import argparse
-from docx_parser import VDocument
+from verstak_parser import VDocument
 
 
 def main(in_path: str, out_path: str, tipograf_enabled: bool, allow_header_links: bool):

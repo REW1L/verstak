@@ -1,4 +1,4 @@
-# verstak 0.0.9
+# verstak 0.0.10
 Program for creation of html document from docx.
 
 ### Usage
