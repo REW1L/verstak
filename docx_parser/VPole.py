@@ -2,7 +2,6 @@ import json
 from docx.table import Table, _Row, _Cell
 
 from .VParagraph import VParagraph
-from .VHyperlink import VHyperlink
 from .VText import VText
 
 
@@ -74,9 +73,9 @@ class VPole:
             else:
                 parts = self.right_parts
             if len(parts) == 1 and type(parts[0]) == VParagraph:
-                paragraph_part: VHyperlink = parts[0][0]
-                if type(paragraph_part) == VHyperlink:
-                    self.url = paragraph_part.url
+                links = parts[0].get_links_indexes()
+                if len(links) == 1 and parts[0].text.strip() == parts[0][links[0]].text.strip():
+                    self.url = parts[0][links[0]].url
                     parts[0] = VText(parts[0].text)
         self.right_parts = parts
 
@@ -94,10 +93,10 @@ class VPole:
             if str(paragraph).strip() != "":
                 self.right_parts.append(paragraph)
         if len(self.right_parts) == 1:
-            right_paragraph_part: VHyperlink = self.right_parts[0][0]
-            if type(right_paragraph_part) == VHyperlink:
-                self.url = right_paragraph_part.url
-                self.right_parts = [VText(self.right_parts[0].text)]
+            links = self.right_parts[0].get_links_indexes()
+            if len(links) == 1 and self.right_parts[0].text.strip() == self.right_parts[0][links[0]].text.strip():
+                self.url = self.right_parts[0][links[0]].url
+                self.right_parts[0] = VText(self.right_parts[0].text)
         self.__clean_right_parts()
 
     def do_typograf(self):

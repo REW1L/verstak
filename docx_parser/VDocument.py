@@ -12,6 +12,7 @@ from .VText import VText
 from .VPicture import VPicture
 from .VTable import VTable
 from .VListParagraph import VListParagraph
+from .VPlashka import VPlashka
 
 
 class VDocument:
@@ -106,7 +107,7 @@ class VDocument:
             self.parts = parts
             self.__split_paragraphs()
 
-    def to_html(self):
+    def to_html(self, allow_header_links: bool = False):
         html_parts = []
         is_list = False
         list_type = None
@@ -133,7 +134,10 @@ class VDocument:
                     if len(html_parts) > 0 and html_parts[-1].startswith("<h2>"):
                         html_parts[-1] = html_parts[-1].replace("<h2>", '<h3 class="table-heading">')
                         html_parts[-1] = html_parts[-1].replace("</h2>", '</h3>')
-            html_parts.append(part.to_html())
+            if type(part) in [VParagraph, VPlashka]:
+                html_parts.append(part.to_html(allow_header_links=allow_header_links))
+            else:
+                html_parts.append(part.to_html())
         if is_list:
             html_parts[-1] += VListParagraph.type_to_html(list_type, False)
         return "\n\n".join(html_parts)
@@ -142,9 +146,9 @@ class VDocument:
         for part in self.parts:
             part.do_typograf()
 
-    def store_html(self, path: str = f"html{os.sep}result.html"):
+    def store_html(self, path: str = f"html{os.sep}result.html", allow_header_links: bool = False):
         with open(path, "w") as result_file:
-            result_file.write(self.to_html())
+            result_file.write(self.to_html(allow_header_links=allow_header_links))
             result_file.write("\n")
             result_file.flush()
 

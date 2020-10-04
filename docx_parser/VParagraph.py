@@ -44,29 +44,35 @@ class VParagraph:
     def __iter__(self):
         return self.parts.__iter__()
 
-    def to_html(self, is_warning: bool = False):
+    def to_html(self, is_warning: bool = False, allow_header_links: bool = False):
         html_list = []
-        text = "".join([str(x) for x in self.parts])
-        if text == "":
+        if str(self) == "":
             return ""
-        if self.title and len(text) < 90:
+        text_length = len(self.text)
+        if self.title and text_length < 90:
             html_list.append(VText(f"<h2>"))
-        elif self.title and len(text) >= 90:
+        elif self.title and text_length >= 90:
             html_list.append(VText(f'<p class="verstak_warning">'))
         elif self.list_type is None and not self.is_picture():
             if is_warning:
                 html_list.append(VText(f'<p class="verstak_warning">'))
             else:
                 html_list.append(VText("<p>"))
+
         for part in self.parts:
+            if self.title and allow_header_links:
+                if type(part) != VHyperlink:
+                    part = VText(part.text)
             html_list.append(part)
-        if self.title and len(text) < 90:
+
+        if self.title and text_length < 90:
             html_list.append(VText(f"</h2>"))
-        elif self.title and len(text) >= 90:
+        elif self.title and text_length >= 90:
             html_list.append(VText(f"</p>"))
         elif self.list_type is None and not self.is_picture():
             html_list.append(VText(f"</p>"))
-        if self.title:
+
+        if self.title and not is_warning and not allow_header_links:
             return "".join([x.text for x in html_list])
         elif self.is_picture():
             html_str = html_list[0].to_html()
@@ -111,6 +117,13 @@ class VParagraph:
             if type(part) == VPicture:
                 return True
         return False
+
+    def get_links_indexes(self):
+        indexes = []
+        for index in range(len(self)):
+            if type(self[index]) == VHyperlink:
+                indexes.append(index)
+        return indexes
 
     @property
     def list_type(self):
