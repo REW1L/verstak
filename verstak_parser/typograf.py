@@ -18,7 +18,7 @@ class Glue:
         },
         {
             "nbsp_group": 2,
-            "pattern": re.compile("(^|[^—0-9])[0-9][0-9][0-9,]+([  ])[A-Za-zА-Яа-я]+", re.MULTILINE),
+            "pattern": re.compile("(^|[^—0-9])[0-9][0-9]+,?[0-9]+([  ])[A-Za-zА-Яа-я]+", re.MULTILINE),
         },
         {
             "nbsp_group": 3,
@@ -127,4 +127,7 @@ if __name__ == "__main__":
     assert VText("много денег 12 009 — 17 877 ₽ или мало").do_typograf() == "много денег [nobr]12 009 — 17 877 ₽[/nobr]" \
                                                                             " или мало"
     assert VText("бла-бла, и т. д., и т.п.").do_typograf() == "бла-бла, и [nobr]т. д.[/nobr], и [nobr]т.п.[/nobr]"
+    assert VText("для себя").do_typograf() == "для&nbsp;себя"
+    assert VText("текст 110, если текст").do_typograf() == "текст 110, если текст"
+    assert VText("20:00, но").do_typograf() == "20:00, но"
     print("ALL IS OK")
