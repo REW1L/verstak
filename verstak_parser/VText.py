@@ -9,6 +9,7 @@ class VText:
         """
         self.text = text
         self.glue_warning = False
+        self.glue = Glue()
 
     def __str__(self):
         return self.text
@@ -61,7 +62,7 @@ class VText:
         """
         Add nobr by rules from typograph
         """
-        nobr_indexes = Glue.nobr(self.text)
+        nobr_indexes = self.glue.nobr(self.text)
         nobr_indexes.sort()
         if len(nobr_indexes) > 0:
             shift = 0
@@ -72,18 +73,18 @@ class VText:
         """
         Add nbsp by rules from typograph
         """
-        nbsp_indexes = Glue.nbsp(self.text)
+        nbsp_indexes = self.glue.nbsp(self.text)
         if len(nbsp_indexes) > 0:
             nbsp_indexes.sort()
             shift = 0
             for index in nbsp_indexes:
-                shift += self.replace_char_in_place(index + shift, Glue.NBSP)
+                shift += self.replace_char_in_place(index + shift, self.glue.NBSP)
 
     def __add_span(self):
         """
         Add span by rules from typograph
         """
-        span_indexes = Glue.span(self.text)
+        span_indexes = self.glue.span(self.text)
         if len(span_indexes) > 0:
             span_indexes.sort()
             shift = 0

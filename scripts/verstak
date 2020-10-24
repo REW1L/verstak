@@ -2,7 +2,7 @@
 
 import os
 import argparse
-from verstak_parser import VDocument
+from verstak_parser import VDocument, Glue
 
 
 def main(in_path: str, out_path: str, tipograf_enabled: bool, allow_header_links: bool):
@@ -46,14 +46,26 @@ def process_directory(in_path: str, out_path: str):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Make html from docx.')
-    parser.add_argument('input', metavar='in', type=str,
-                        help='Input file/directory', default=f'{os.getcwd()}{os.sep}docs')
+    parser = argparse.ArgumentParser(description='Make html from docx.',
+                                     formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument('input', metavar='in', type=str, nargs='?',
+                        help='Input file/directory')
     parser.add_argument('output', metavar='out', type=str, nargs='?',
                         help='Output directory', default=f"{os.getcwd()}{os.sep}")
     parser.add_argument('-t', dest='tipograf_enabled', action='store_false',
                         help='Disable tipograf')
     parser.add_argument('-ah', dest='allow_header_links', action='store_true',
                         help='Allow links in headers/titles')
+    parser.add_argument('--config', dest='config', action='store_true',
+                        help='Show configs paths of tipograph currently in use\n'
+                             'VERSTAK_CONFIG environment variable can include path\n'
+                             'for additional configure file for tipograf')
     args = parser.parse_args()
-    main(args.input, args.output, args.tipograf_enabled, args.allow_header_links)
+    if args.config:
+        print(f"Paths to configure files:")
+        for config_path in Glue().configs_paths():
+          print(config_path)
+    elif args.input is None:
+        parser.error("the following arguments are required: in")
+    else:
+        main(args.input, args.output, args.tipograf_enabled, args.allow_header_links)
