@@ -97,6 +97,8 @@ class VDocument:
                     continue
                 elif paragraph.is_picture():
                     caption = True
+                elif paragraph.title:
+                    caption = False
                 if paragraph is not None:
                     self.parts.append(paragraph)
             elif type(elem) == CT_Tbl:
