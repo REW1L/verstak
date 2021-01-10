@@ -34,13 +34,15 @@ class VTable:
     def __str__(self):
         return "".join([str(x) for x in self])
 
-    def to_html(self):
+    def to_html(self, skip_tables: bool = False):
         """
         Get html representation
         :return: html representation
         """
         if self.type == VTable.TYPE.POLES or self.type == VTable.TYPE.PLASHKA:
             return "\n\n".join([x.to_html() for x in self])
+        elif self.type == VTable.TYPE.BIG_TABLE:
+            return "".join([x.to_html(skip_tables) for x in self])
         else:
             return "".join([x.to_html() for x in self])
 

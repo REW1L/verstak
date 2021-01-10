@@ -1,5 +1,6 @@
 import os
 import docx
+from tqdm import tqdm
 from typing import Optional
 from docx.document import Document
 from docx.oxml.text.paragraph import CT_P
@@ -13,7 +14,7 @@ from .VPicture import VPicture
 from .VTable import VTable
 from .VListParagraph import VListParagraph
 from .VPlashka import VPlashka
-
+from .VBigTable import VBigTable
 
 class VDocument:
     def __init__(self, document: Document = None):
@@ -87,7 +88,7 @@ class VDocument:
         self.raw = document
         blank_line_caption_found = False
         caption = False
-        for elem in document.element.body:
+        for elem in tqdm(document.element.body):
             if type(elem) == CT_P:
                 paragraph = self.__parse_paragraph(elem, self.raw, caption)
                 if paragraph is None:
@@ -135,10 +136,11 @@ class VDocument:
             self.parts = parts
             self.__split_paragraphs()
 
-    def to_html(self, allow_header_links: bool = False) -> str:
+    def to_html(self, allow_header_links: bool = False, skip_tables: bool = False) -> str:
         """
         Get html representation
         :param allow_header_links: allows links to be added for headers/titles
+        :param skip_tables: adds stub instead of big tables
         :return: html representation
         """
         html_parts = []
@@ -172,7 +174,10 @@ class VDocument:
                     if len(html_parts) > 0 and html_parts[-1].startswith("<h2>"):
                         html_parts[-1] = html_parts[-1].replace("<h2>", '<h3 class="table-heading">')
                         html_parts[-1] = html_parts[-1].replace("</h2>", '</h3>')
-            if type(part) in [VParagraph, VPlashka]:  # VPlashka has headers in it
+                    html_parts.append(part.to_html(skip_tables))
+                else:
+                    html_parts.append(part.to_html())
+            elif type(part) in [VParagraph, VPlashka]:  # VPlashka has headers in it
                 html_parts.append(part.to_html(allow_header_links=allow_header_links))
             else:
                 html_parts.append(part.to_html())
@@ -187,14 +192,16 @@ class VDocument:
         for part in self.parts:
             part.do_typograf()
 
-    def store_html(self, path: str = f"html{os.sep}result.html", allow_header_links: bool = False):
+    def store_html(self, path: str = f"html{os.sep}result.html", allow_header_links: bool = False,
+                   skip_tables: bool = False):
         """
         Store document as file with html structure
         :param path: output file path
         :param allow_header_links: allows links to be added for headers/titles
+        :param skip_tables: adds stub instead of big tables
         """
         with open(path, "w") as result_file:
-            result_file.write(self.to_html(allow_header_links=allow_header_links))
+            result_file.write(self.to_html(allow_header_links=allow_header_links, skip_tables=skip_tables))
             result_file.write("\n")
             result_file.flush()
 

@@ -1,3 +1,4 @@
 python-docx
 lxml
 regex
+tqdm
