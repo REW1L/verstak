@@ -7,7 +7,7 @@ Script `verstak` will be available after installation.
 Help for it is provided below. 
 ```
 $ verstak --help
-usage: verstak [-h] [-t] [-ah] in [out]
+usage: verstak [-h] [-t] [-ah] [-st] [--config] [in] [out]
 
 Make html from docx.
 
@@ -18,6 +18,7 @@ positional arguments:
 optional arguments:
   -h, --help  show this help message and exit
   -t          Disable tipograf
+  -st         Print stub instead of parsed tables
   -ah         Allow links in headers/titles
   --config    Show configs paths of tipograph currently in use
               VERSTAK_CONFIG environment variable can include path
