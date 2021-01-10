@@ -98,7 +98,7 @@ class VDocument:
                     continue
                 elif paragraph.is_picture():
                     caption = True
-                elif paragraph.title:
+                elif caption and paragraph.title:
                     caption = False
                 if paragraph is not None:
                     self.parts.append(paragraph)
