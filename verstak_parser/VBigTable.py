@@ -1,7 +1,6 @@
 from docx.table import Table, _Row, _Cell
 
 from .VParagraph import VParagraph
-from .VBoldText import VBoldText
 
 
 class VBigTable:
@@ -17,25 +16,6 @@ class VBigTable:
 
     def __str__(self):
         return "## BIG TABLE"
-
-    def __check_headers(self):
-        """
-        Check the first row of the table for headers
-        :return: True if headers found and False otherwise
-        """
-        headers = True
-        for cell in self.raw.rows[0].cells:
-            for paragraph in cell.paragraphs:
-                vp = VParagraph(paragraph)
-                for part in vp.parts:
-                    if type(part) != VBoldText:
-                        headers = False
-                        break
-                if not headers:
-                    break
-            if not headers:
-                break
-        return headers
 
     def __parse_headers(self, row: _Row):
         """
@@ -70,8 +50,6 @@ class VBigTable:
             return
         elif len(table.rows) == 1:
             rows = table.rows
-        elif not self.__check_headers():
-            rows = table.rows
         else:
             self.__parse_headers(table.rows[0])
             rows = table.rows[1:]
@@ -89,19 +67,21 @@ class VBigTable:
                       f'{self.MAX_WIDTH}!important;">']
         if len(self.headers) != 0:
             col_width = int((self.MAX_WIDTH / len(self.headers)))
-            html_table.append('<thead>')
+            html_table.append('\t<thead>')
+            html_table.append('\t\t<tr>')
             for header in self.headers:
                 cell_html = [p.to_html() for p in header]
-                html_table.append(f'<th style="width: {col_width}">{"".join(cell_html)}</th>')
-            html_table.append('</thead>')
-        html_table.append('<tbody>')
+                html_table.append(f'\t\t\t<th style="width: {col_width}">{"".join(cell_html)}</th>')
+            html_table.append('\t\t</tr>')
+            html_table.append('\t</thead>')
+        html_table.append('\t<tbody>')
         for row in self.rows:
-            html_table.append('<tr>')
+            html_table.append('\t\t<tr>')
             for cell in row:
                 cell_html = [p.to_html() for p in cell]
-                html_table.append(f'<td>{"".join(cell_html)}</td>')
-            html_table.append('</tr>')
-        html_table.append('</tbody>')
+                html_table.append(f'\t\t\t<td>{"".join(cell_html)}</td>')
+            html_table.append('\t\t</tr>')
+        html_table.append('\t</tbody>')
         html_table.append('</table>')
         return "\n".join(html_table)
 
