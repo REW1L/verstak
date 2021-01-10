@@ -64,14 +64,14 @@ class VBigTable:
         if skip:
             return f"<p>## BIG TABLE</p>"
         html_table = ['<table class="desktop-table desktop-table--thead-with-border" style="width: '
-                      f'{self.MAX_WIDTH}!important;">']
+                      f'{self.MAX_WIDTH}px!important;">']
         if len(self.headers) != 0:
             col_width = int((self.MAX_WIDTH / len(self.headers)))
             html_table.append('\t<thead>')
             html_table.append('\t\t<tr>')
             for header in self.headers:
                 cell_html = [p.to_html() for p in header]
-                html_table.append(f'\t\t\t<th style="width: {col_width}">{"".join(cell_html)}</th>')
+                html_table.append(f'\t\t\t<th style="width: {col_width}px">{"".join(cell_html)}</th>')
             html_table.append('\t\t</tr>')
             html_table.append('\t</thead>')
         html_table.append('\t<tbody>')

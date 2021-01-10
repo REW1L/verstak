@@ -132,4 +132,7 @@ if __name__ == "__main__":
     assert VText("The bar and for all of this").do_typograf() == "The&nbsp;bar and&nbsp;for&nbsp;all of this", \
         VText("The bar and for all of this").do_typograf()
 
+    assert VText("стр. 123").do_typograf() == "стр.&nbsp;123", \
+        VText("стр. 123").do_typograf()
+
     print("ALL IS OK")
