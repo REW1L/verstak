@@ -125,7 +125,7 @@ class VParagraph:
         :param nobr_enabled: enable recognition of cases with [nobr][/nobr]
         :return: None
         """
-        if self.is_picture() or self.text.strip() == "":
+        if self.text.strip() == "":
             return
         for part in self:
             if type(part) != VListParagraph:

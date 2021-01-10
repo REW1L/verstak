@@ -1,4 +1,4 @@
-import re
+import regex as re
 import configparser
 import os
 
@@ -82,7 +82,7 @@ class Glue:
         """
         indexes = set()
         for pattern in self.__nbsp_patterns:
-            founds = pattern['pattern'].finditer(sentence)
+            founds = pattern['pattern'].finditer(sentence, overlapped=True)
             if founds is not None:
                 for search in founds:
                     if search.start(pattern['group']) >= 0:
@@ -105,7 +105,7 @@ if __name__ == "__main__":
     assert VText("1,5—2 часа").do_typograf() == "[nobr]1,5—2 часа[/nobr]", \
         VText("1,5—2 часа").do_typograf()
     assert VText("много денег 12 009 — 17 877 ₽ или мало").do_typograf() == "много денег [nobr]12 009 — 17 877 ₽[/nobr]" \
-                                                                            " или мало", \
+                                                                            " или&nbsp;мало", \
         VText("много денег 12 009 — 17 877 ₽ или мало").do_typograf()
     assert VText("бла-бла, и т. д., и т.п.").do_typograf() == "бла-бла, и [nobr]т. д.[/nobr], и [nobr]т.п.[/nobr]", \
         VText("бла-бла, и т. д., и т.п.").do_typograf()
@@ -115,8 +115,21 @@ if __name__ == "__main__":
         VText("текст 110, если текст").do_typograf()
     assert VText("20:00, но").do_typograf() == "20:00, но", \
         VText("20:00, но").do_typograf()
-    assert VText("из-за кота не получилось уснуть").do_typograf() == "[nobr]из-за кота[/nobr] не получилось уснуть", \
-        VText("все-таки мне из-за кота не получилось уснуть").do_typograf()
+    assert VText("из-за кота не получилось уснуть").do_typograf() == "[nobr]из-за[/nobr] кота не получилось уснуть", \
+        VText("из-за кота не получилось уснуть").do_typograf()
     assert VText("все-таки мне получилось уснуть").do_typograf() == "[nobr]все-таки[/nobr] мне получилось уснуть", \
         VText("все-таки мне получилось уснуть").do_typograf()
+    assert VText("это известно в т. ч. как неизвестность").do_typograf() == "это известно в [nobr]т. ч.[/nobr]" \
+                                                                            " как неизвестность", \
+        VText("это известно в т. ч. как неизвестность").do_typograf()
+    assert VText("Во-первых, это во-вторых").do_typograf() == "[nobr]Во-первых[/nobr], это [nobr]во-вторых[/nobr]",\
+        VText("Во-первых, это во-вторых").do_typograf()
+    assert VText("ну и в-третьих не забудем").do_typograf() == "ну и [nobr]в-третьих[/nobr] не забудем", \
+        VText("ну и в-третьих не забудем").do_typograf()
+    assert VText("потому что так как обо мне вне контекста все равно").do_typograf() == \
+           "потому&nbsp;что так&nbsp;как обо&nbsp;мне вне&nbsp;контекста все&nbsp;равно", \
+           VText("потому что так как обо мне вне контекста все равно").do_typograf()
+    assert VText("The bar and for all of this").do_typograf() == "The&nbsp;bar and&nbsp;for&nbsp;all of this", \
+        VText("The bar and for all of this").do_typograf()
+
     print("ALL IS OK")
