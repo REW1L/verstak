@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 setup(name='verstak',
-      version='0.0.17',
+      version='0.0.18',
       description='Application for transformation of docx to html',
       author='Ivan Danilov',
       url='https://github.com/REW1L/verstak',
