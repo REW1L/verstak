@@ -1,6 +1,7 @@
 from docx.table import Table, _Row, _Cell
 
 from .VParagraph import VParagraph
+from .VBoldText import VBoldText
 
 
 class VBigTable:
@@ -70,7 +71,12 @@ class VBigTable:
             html_table.append('\t<thead>')
             html_table.append('\t\t<tr>')
             for header in self.headers:
-                cell_html = [p.text for p in header]
+                cell_html = []
+                for p in [h for h in header]:
+                    if p.is_picture():
+                        cell_html.append(p.to_html())
+                    else:
+                        cell_html.append(p.text)
                 html_table.append(f'\t\t\t<th style="width: {col_width}px">{"".join(cell_html)}</th>')
             html_table.append('\t\t</tr>')
             html_table.append('\t</thead>')
@@ -78,7 +84,7 @@ class VBigTable:
         for row in self.rows:
             html_table.append('\t\t<tr>')
             for cell in row:
-                cell_html = [p.text for p in cell]
+                cell_html = [p.to_html() for p in [h for h in cell]]
                 html_table.append(f'\t\t\t<td>{"".join(cell_html)}</td>')
             html_table.append('\t\t</tr>')
         html_table.append('\t</tbody>')

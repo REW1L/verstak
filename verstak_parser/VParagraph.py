@@ -62,6 +62,7 @@ class VParagraph:
         if self.title and text_length < 90:  # title should be shorter than 90 symbols
             html_list.append(VText(f"<h2>"))
         elif self.title and text_length >= 90:
+            is_warning = True
             html_list.append(VText(f'<p class="verstak_warning">'))
         elif self.list_type is None and not self.is_picture():
             if is_warning:
@@ -84,6 +85,8 @@ class VParagraph:
 
         if self.title and not is_warning and not allow_header_links:
             return "".join([x.text for x in html_list])
+        if self.title and is_warning:
+            return "".join([x.to_html() for x in html_list])
         elif self.is_picture():
             html_str = html_list[0].to_html()
             for part in html_list[1:]:

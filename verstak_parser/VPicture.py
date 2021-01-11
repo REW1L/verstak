@@ -1,6 +1,6 @@
 from docx.oxml.text.run import CT_R
 from .VText import VText
-
+from .VHyperlink import VHyperlink
 
 class VTextPicture(VText):
 
@@ -59,7 +59,7 @@ class VPicture:
         :param caption: caption of the picture to be set
         :return: text representation of picture
         """
-        self.caption = caption
+        self.caption = [caption]
         return str(self)
 
     def do_typograf(self, nobr_enabled: bool = True):
