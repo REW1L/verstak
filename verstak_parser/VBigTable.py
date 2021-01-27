@@ -65,7 +65,7 @@ class VBigTable:
         if skip:
             return f"<p>## BIG TABLE</p>"
         html_table = ['<table class="desktop-table desktop-table--thead-with-border" style="width: '
-                      f'{self.MAX_WIDTH}px!important;">']
+                      f'1px!important;">']
         if len(self.headers) != 0:
             col_width = int((self.MAX_WIDTH / len(self.headers)))
             html_table.append('\t<thead>')
